@@ -30,8 +30,6 @@ AST_list parseVarDecl();
 
 AST_list parseVarIdent();
 
-AST *parseIdent();
-
 AST *parseStmts();
 
 AST* parseStmt();
@@ -39,6 +37,18 @@ AST* parseStmt();
 bool is_stmt_beginning_token(token t);
 
 AST* parseAssignStmt();
+
+AST *parseTerm();
+
+AST *parseFactor();
+
+bool is_a_sign(token_type tt);
+
+AST *parseSign()
+
+AST *parseIdent();
+
+AST* parseNumber();
 
 AST* parseBeginStmt();
 
@@ -67,7 +77,5 @@ AST* parseExpr();
 AST* parseBinExpr();
 
 AST* parseArithOp();
-
-AST* parseNumber();
 
 #endif

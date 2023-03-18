@@ -17,6 +17,7 @@
 #define STMTBEGINTOKS 7
 
 static token currToken;
+
 static token_type can_begin_stmt[STMTBEGINTOKS] = 
 {identsym, beginsym, ifsym, whilesym, readsym, writesym, skipsym};
 
@@ -172,6 +173,8 @@ AST_list parseConstDecl()
 		add_AST_to_end(&ret, &last, new_const_def);
 	}
 
+	eat(semisym);
+
 	return ret;
 }
 
@@ -211,7 +214,7 @@ AST_list parseVarDecls()
 	return ret;
 }
 
-// <var-decl> ::= var <idents>
+// <var-decl> ::= var <idents> ;
 // <idents> ::= <ident> {<comma-ident>}
 // 							  ^
 // 						, <ident>
@@ -231,6 +234,8 @@ AST_list parseVarDecl()
 		new_var_decl = parseVarIdent();
 		add_AST_to_end(&ret, &last, new_var_decl);
 	}
+
+	eat(semisym);
 
 	return ret;
 }
@@ -302,6 +307,7 @@ AST* parseStmt()
 			break;
 		default:
 			parse_error_unexpected(can_begin_stmt, STMTBEGINTOKS, currToken);
+			break;
 	}
 
 	return ret;
@@ -320,30 +326,107 @@ AST* parseAssignStmt()
 	return ast_assign_stmt(idToken, idToken.text, exp);
 }
 
-// maybe create a 
-// <expr> ::= <expr> <bin-arith-op> <expr> | <ident> | <number>
+// <expr> ::= <term> {<add-sub-term>}
 AST* parseExpr()
 {
-	AST *ret = NULL;
-	token tempToken;
+	// AST *e1 = NULL, *e2 = NULL;
+	
+	AST *ret = parseTerm();
 
-	switch (currToken.typ)
+	return ret;
+}
+
+// <term> ::= <factor> {<mult-div-factor>}
+AST_list parseTerm()
+{
+	AST_list ret = parseFactor();
+	token remember;
+	bin_arith_op mult_or_div;
+
+	while (currToken.typ == multsym || currToken.typ == divsym)
 	{
-		case identsym:
-			ret = parseIdent();
-			break;
-		case numbersym:
-			ret = parseNumber();
-			break;
-		// how to handle the <expr> <bin-arith-op> <expr> case?
-		default:
-			break;
+		if (currToken.typ == multsym)
+		{
+			remember = currToken;
+			eat(multsym);
+		}
+		else if (currToken.typ == divsym)
+		{
+			remember = currToken;
+			eat(divsym);
+		}
+
+
 	}
 
 	return ret;
 }
 
-AST *parseIdent()
+// <factor> ::= <ident> | <sign> <number> | (<expr>)
+// <sign> ::= <plus> | <minus> | <empty>
+AST *parseFactor()
+{
+	AST *ret = NULL;
+
+	// put hard returns for no real reason, can get rid of
+	if (currToken.typ == identsym)
+	{
+		ret = parseIdent();
+	}
+	else if (is_a_sign(currToken.typ))
+	{
+		ret = parseSign();
+	}
+	else if (currToken.typ == numbersym)
+	{
+		ret = parseNumber();
+	}
+	else
+	{
+		eat(lparensym);
+		ret = parseExpr();
+		eat(rparensym);
+	}
+
+	return ret;
+}
+
+// is current token a plus or minus?
+bool is_a_sign(token_type tt)
+{
+	if (tt == plussym || tt == minussym)
+		return true;
+	else
+		return false;
+}
+
+// <sign> ::= <plus> | <minus> | <empty>
+// also account for <number> that follows
+AST *parseSign()
+{
+	AST *ret = NULL;
+	token remember;
+	bin_arith_op plus_or_minus;
+
+	if (currToken.typ == plussym)
+	{
+		remember = currToken;
+		plus_or_minus = addop;
+		eat(plussym);
+	}
+	else
+	{
+		remember = currToken;
+		plus_or_minus = subop;
+		eat(minussym);
+	}
+
+	ret = ast_op_expr(remember, plus_or_minus, parseNumber());
+
+	return ret;
+}
+
+AST_list parseIdent()
 {
 	token idToken = currToken;
 
@@ -352,7 +435,7 @@ AST *parseIdent()
 	return ast_list_singleton(ast_ident(idToken, idToken.text));
 }
 
-AST* parseNumber()
+AST_list parseNumber()
 {
 	token numToken = currToken;
 
@@ -363,29 +446,91 @@ AST* parseNumber()
 
 AST* parseBinExpr()
 {
+	AST *ret = NULL;
 
+	return ret;
 }
 
-AST* parseBeginStmt();
+AST* parseBeginStmt()
+{
+	AST *ret = NULL;
 
-AST* parseStmtList();
+	return ret;
+}
 
-AST* parseIfStmt();
+AST* parseStmtList()
+{
+	AST *ret = NULL;
 
-AST* parseWhileStmt();
+	return ret;
+}
 
-AST* parseReadStmt();
+AST* parseIfStmt()
+{
+	AST *ret = NULL;
 
-AST* parseWriteStmt();
+	return ret;
+}
 
-AST* parseSkipStmt();
+AST* parseWhileStmt()
+{
+	AST *ret = NULL;
 
-AST* parseCondition();
+	return ret;
+}
 
-AST* parseOddCond();
+AST* parseReadStmt()
+{
+	AST *ret = NULL;
 
-AST* parseBinRelCond();
+	return ret;
+}
 
-AST* parseRelOp();
+AST* parseWriteStmt()
+{
+	AST *ret = NULL;
 
-AST* parseArithOp();
+	return ret;
+}
+
+AST* parseSkipStmt()
+{
+	AST *ret = NULL;
+
+	return ret;
+}
+
+AST* parseCondition()
+{
+	AST *ret = NULL;
+
+	return ret;
+}
+
+AST* parseOddCond()
+{
+	AST *ret = NULL;
+
+	return ret;
+}
+
+AST* parseBinRelCond()
+{
+	AST *ret = NULL;
+
+	return ret;
+}
+
+AST* parseRelOp()
+{
+	AST *ret = NULL;
+
+	return ret;
+}
+
+AST* parseArithOp()
+{
+	AST *ret = NULL;
+
+	return ret;
+}
