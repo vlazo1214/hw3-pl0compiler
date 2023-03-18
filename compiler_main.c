@@ -1,3 +1,6 @@
+// By: Vincent Lazo, Christian Manuel
+// main file, calls parser and declaration checking functions
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>

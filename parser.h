@@ -8,60 +8,66 @@
 void eat();
 
 // call lexer open
-void parser_open();
+void parser_open(const char *filename);
 
 // call lexer close
 void parser_close();
 
 // parse program to return AST
-AST *parsey_parse(AST *ast);
+AST *parseyParse();
 
-void parseBlock(AST *ast, int level);
+AST *parseBlock();
 
-void parseConstDecls(AST_list cds, int level);
+AST_list parseConstDecls();
 
-void parseConstDecl(AST *cd, int level);
+AST_list parseConstDecl();
 
-void parseVarDecls(AST_list vds, int level);
+AST_list parseConstDef();
 
-void parseVarDecl(AST *vd, int level);
+AST_list parseVarDecls();
 
-void newlineAndOptionalSemi(bool addSemiToEnd);
+AST_list parseVarDecl();
 
-void parseStmt(AST *stmt, int indentLevel, bool addSemiToEnd);
+AST_list parseVarIdent();
 
-void parseAssignStmt(AST *stmt, int level, bool addSemiToEnd);
+AST *parseIdent();
 
-void parseBeginStmt(AST *stmt, int level, bool addSemiToEnd);
+AST *parseStmts();
 
-void parseStmtList(AST *stmt, int level, AST_list rest, bool addSemiToEnd);
+AST* parseStmt();
 
-void parseIfStmt(AST *stmt, int level, bool addSemiToEnd);
+bool is_stmt_beginning_token(token t);
 
-void parseWhileStmt(AST *stmt, int level, bool addSemiToEnd);
+AST* parseAssignStmt();
 
-void parseReadStmt(AST *stmt, int level, bool addSemiToEnd);
+AST* parseBeginStmt();
 
-void parseWriteStmt(AST *stmt, int level, bool addSemiToEnd);
+AST* parseStmtList();
 
-void parseSkipStmt(int level, bool addSemiToEnd);
+AST* parseIfStmt();
 
-void parseCondition(AST *cond);
+AST* parseWhileStmt();
 
-void parseOddCond(AST *cond);
+AST* parseReadStmt();
 
-void parseBinRelCond(AST *cond);
+AST* parseWriteStmt();
 
-void parseRelOp(rel_op relop);
+AST* parseSkipStmt();
 
-void parseExpr(AST *exp);
+AST* parseCondition();
 
-void parseBinExpr(AST *exp);
+AST* parseOddCond();
 
-void parseArithOp(bin_arith_op op);
+AST* parseBinRelCond();
 
-void parseIdent(AST *id);
+AST* parseRelOp();
 
-void parseNumber(AST *num);
+AST* parseExpr();
+
+AST* parseBinExpr();
+
+AST* parseArithOp();
+
+AST* parseNumber();
 
 #endif

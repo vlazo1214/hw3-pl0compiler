@@ -158,8 +158,8 @@ typedef struct AST_s {
 // starts in the given file (fn), line (ln), and column (col),
 // and which contains the given ASTs for const-decls (cds), var-decls (vds)
 // and statement (stmt).
-extern AST *ast_program(const char *fn, unsigned int ln, unsigned int col,
-		 AST_list cds, AST_list vds, AST *stmt);
+extern AST *ast_program(const char *fn, unsigned int ln, unsigned int col, 
+						AST_list cds, AST_list vds, AST *stmt);
 
 // Return a (pointer to a) fresh AST for a const definition
 // with name ident and value num, which starts at the token t
