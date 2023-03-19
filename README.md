@@ -1,5 +1,5 @@
 # hw3-pl0compiler 
-## Build a parser by building an AST and a declaration checker by analayzing those ASTs.
+## Build a parser by building an AST and a declaration checker by analayzing that AST.
 
 ### Parser
 The parser will build an AST by getting tokens via `lexer.c`, checking for syntax errors along the way/
