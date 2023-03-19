@@ -60,7 +60,8 @@ void parser_close()
 AST *parseyParse()
 {
 	AST *progAST = parseBlock();
-	eat(eofsym);
+	eat(periodsym);
+	// eat(eofsym);
 
 	// might be more stuff to do here
 
@@ -159,6 +160,8 @@ AST_list parseConstDecl()
 
 	ret = parseConstDef(const_sym);
 	last = ret;
+
+	// might need to eat semisym?
 
 	while (currToken.typ == commasym)
 	{
@@ -276,7 +279,13 @@ bool is_stmt_beginning_token(token t)
 	return false;
 }
 
-// <stmt> ::= <ident> := <expr> | ...
+// <stmt> ::= <ident> := <expr>
+// | begin <stmt> {<semi-stmt>} end
+// | if <condition> then <stmt> else <stmt>
+// | while <condition> do <stmt>
+// | read <ident>
+// | write <expr>
+// | skip
 AST* parseStmt()
 {
 	AST *ret = NULL;
@@ -312,6 +321,9 @@ AST* parseStmt()
 	return ret;
 }
 
+// -----------------------------assign stmt-----------------------------
+
+
 // <ident> := <expr>
 AST* parseAssignStmt()
 {
@@ -332,7 +344,7 @@ AST_list parseExpr()
 {
 	AST_list ret = parseTerm();
 	AST_list last = ret;
-	AST_list term;
+	AST *e1 = ast_list_singleton(ret), *e2 = NULL;
 	token plus_or_minus;
 	bin_arith_op op;
 
@@ -352,10 +364,10 @@ AST_list parseExpr()
 			eat(minussym);
 		}
 
-		term = parseTerm();
+		e2 = ast_op_expr(plus_or_minus, op, ast_list_first(parseTerm()));
 
 		add_AST_to_end(&ret, &last, ast_list_singleton(
-			ast_op_expr(plus_or_minus, op, term)));
+			ast_bin_expr(plus_or_minus, e1, op, e2)));
 	}
 
 	return ret;
@@ -482,93 +494,204 @@ AST *parseNumber()
 	return ast_number(numToken, numToken.value);
 }
 
-AST* parseBinExpr()
+// AST* parseBinExpr()
+// {
+// 	AST *ret = NULL;
+
+// 	return ret;
+// }
+
+// -----------------------------begin stmt-----------------------------
+
+// <begin-stmt> ::= begin <stmt> {<semi-stmt>} end
+AST *parseBeginStmt()
 {
-	AST *ret = NULL;
+	token begin_sym = currToken;
+	AST_list ret;
+	AST_list last;
+	AST_list stmt_list;
+
+	eat(beginsym);
+
+	ret = ast_list_singleton(parseStmt());
+	last = ret;
+
+	stmt_list = parseStmtList();
+
+	add_AST_to_end(&ret, &last, ast_list_first(stmt_list));
+
+	eat(endsym);
+
+	return ast_begin_stmt(begin_sym, ast_list_first(ret));
+}
+
+// <semi-stmt> ::= ; <stmt>
+AST_list parseStmtList()
+{
+	AST_list ret = ast_list_empty_list();
+	AST_list last = ret;
+	AST *tempStmt;
+
+	while (currToken.typ == semisym)
+	{
+		eat(semisym);
+
+		tempStmt = parseStmt();
+
+		add_AST_to_end(&ret, &last, ast_list_singleton(tempStmt));
+	}
 
 	return ret;
 }
 
-AST* parseBeginStmt()
-{
-	AST *ret = NULL;
+// -----------------------------if stmt-----------------------------
 
-	return ret;
-}
-
-AST* parseStmtList()
-{
-	AST *ret = NULL;
-
-	return ret;
-}
-
+// <if-stmt> ::= if <condition> then <stmt> else <stmt>
 AST* parseIfStmt()
 {
-	AST *ret = NULL;
+	AST *cond_stmt, *then_stmt, *else_stmt;
+	token if_sym = currToken;
+
+	eat(ifsym);
+
+	cond_stmt = parseCondition();
+
+	eat(thensym);
+
+	then_stmt = parseStmt();
+
+	eat(elsesym);
+
+	else_stmt = parseStmt();
+
+	return ast_if_stmt(if_sym, cond_stmt, then_stmt, else_stmt);
+}
+
+// <condition> ::= odd <expr> | <expr> <rel-op> <expr>
+// <rel-op> ::= = | <> | < | <= | > | >=
+AST* parseCondition()
+{
+	AST *ret = NULL, *e1 = NULL, *e2 = NULL;
+	token temp;
+	rel_op op;
+
+	if (currToken.typ == oddsym)
+	{
+		temp = currToken;
+
+		ret = ast_odd_cond(temp, parseExpr());
+
+		eat(oddsym);
+	}
+	else
+	{
+		temp = currToken;
+
+		e1 = parseExpr();
+		op = which_one();
+		e2 = parseExpr();
+
+		ret = ast_bin_cond(temp, e1, op, e2);
+	}
 
 	return ret;
 }
 
+rel_op which_one()
+{
+	rel_op op;
+
+	switch (currToken.typ)
+	{
+		case eqsym:
+			op = eqop;
+			eat(eqsym);
+			break;
+		case neqsym:
+			op = neqop;
+			eat(neqsym);
+			break;
+		case lessym:
+			op = ltop;
+			eat(lessym);
+			break;
+		case leqsym:
+			op = leqop;
+			eat(leqsym);
+			break;
+		case gtrsym:
+			op = gtop;
+			eat(gtrsym);
+			break;
+		case geqsym:
+			op = geqop;
+			eat(geqsym);
+			break;
+		default:
+			break;
+	}
+
+	return op;
+}
+
+// -----------------------------while stmt-----------------------------
+
+// <while-stmt> ::= while <condition> do <stmt>
 AST* parseWhileStmt()
 {
-	AST *ret = NULL;
+	AST *cond_stmt, *do_stmt;
+	token while_sym = currToken;
 
-	return ret;
+	eat(whilesym);
+
+	cond_stmt = parseCondition();
+
+	eat(dosym);
+
+	do_stmt = parseStmt();
+
+	return ast_while_stmt(while_sym, cond_stmt, do_stmt);
 }
 
+// -----------------------------read stmt-----------------------------
+
+// <read-stmt> ::= read <ident>
 AST* parseReadStmt()
 {
-	AST *ret = NULL;
+	token read_sym = currToken;
+	token idToken;
 
-	return ret;
+	eat(readsym);
+
+	idToken = currToken;
+
+	eat(identsym);
+
+	return ast_read_stmt(read_sym, idToken.text);
 }
 
+// -----------------------------write stmt-----------------------------
+
+// <write-stmt> ::= write <expr>
 AST* parseWriteStmt()
 {
-	AST *ret = NULL;
+	AST *ret;
+	token write_sym = currToken;
 
-	return ret;
+	eat(writesym);
+
+	ret = parseExpr();
+
+	return ast_write_stmt(write_sym, ret);
 }
+
+// -----------------------------skip stmt-----------------------------
 
 AST* parseSkipStmt()
 {
-	AST *ret = NULL;
+	token skip_sym = currToken;
 
-	return ret;
-}
+	eat(skipsym);
 
-AST* parseCondition()
-{
-	AST *ret = NULL;
-
-	return ret;
-}
-
-AST* parseOddCond()
-{
-	AST *ret = NULL;
-
-	return ret;
-}
-
-AST* parseBinRelCond()
-{
-	AST *ret = NULL;
-
-	return ret;
-}
-
-AST* parseRelOp()
-{
-	AST *ret = NULL;
-
-	return ret;
-}
-
-AST* parseArithOp()
-{
-	AST *ret = NULL;
-
-	return ret;
+	return ast_skip_stmt(skip_sym);
 }

@@ -60,6 +60,8 @@ AST* parseStmtList();
 
 AST* parseIfStmt();
 
+rel_op which_one();
+
 AST* parseWhileStmt();
 
 AST* parseReadStmt();

@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.14 2023/03/01 01:13:56 leavens Exp $
+# $Id: Makefile,v 1.15 2023/03/17 03:00:59 leavens Exp leavens $
 # Makefile for lexer in COP 3402
 
 # Add .exe to the end of target to get that suffix in the rules
@@ -10,6 +10,8 @@ RM = rm -f
 SUBMISSIONZIPFILE = submission.zip
 ZIP = zip -9
 SOURCESLIST = sources.txt
+TESTFILES = hw3-asttest*.pl0 hw3-parseerrtest*.pl0 hw3-declerrtest*.pl0
+EXPECTEDOUTPUTS = `echo "$(TESTFILES)" | sed -e 's/\\.pl0/.out/g'`
 
 $(COMPILER): *.c *.h
 	$(CC) $(CFLAGS) -o $(COMPILER) `cat $(SOURCESLIST)`
@@ -30,7 +32,7 @@ clean:
 
 check-outputs: $(COMPILER) hw3-*test*.pl0
 	DIFFS=0; \
-	for f in `echo hw3-asttest*.pl0 hw3-parseerrtest*.pl0 hw3-declerrtest*.pl0 | sed -e 's/\\.pl0//g'`; \
+	for f in `echo $(TESTFILES) | sed -e 's/\\.pl0//g'`; \
 	do \
 		echo running "$$f.pl0"; \
 		./$(COMPILER) "$$f.pl0" >"$$f.myo" 2>&1; \
@@ -63,7 +65,7 @@ create-outputs: $(COMPILER) hw3-*test*.pl0
 	then \
 		exit 1; \
 	fi; \
-	for f in `echo hw3-asttest*.pl0 hw3-parseerrtest*.pl0 hw3-declerrtest*.pl0 | sed -e 's/\\.pl0//g'`; \
+	for f in `echo $(TESTFILES) | sed -e 's/\\.pl0//g'`; \
 	do \
 		echo running "$$f.pl0"; \
 		$(RM) "$$f.out"; \
@@ -86,7 +88,7 @@ check-good-outputs: create-outputs
 	fi
 
 digest.txt: 
-	for f in `ls hw3-asttest*.pl0 hw3-parseerrtest*.pl0 hw3-declerrtest*.pl0 | sed -e 's/\\.pl0//g'`; \
+	for f in `ls $(TESTFILES) | sed -e 's/\\.pl0//g'`; \
         do cat $$f.pl0; echo " "; cat $$f.out; echo " "; echo " "; \
         done >digest.txt
 
@@ -101,7 +103,7 @@ PROVIDEDFILES = token.[ch] lexer_output.[ch] utilities.[ch] lexer.h \
 
 hw3-tests.zip: create-outputs $(TESTSZIPFILE)
 
-$(TESTSZIPFILE): hw3-*test*.pl0 Makefile $(PROVIDEDFILES)
+$(TESTSZIPFILE): $(TESTFILES) Makefile $(PROVIDEDFILES)
 	$(RM) $(TESTSZIPFILE)
-	chmod 444 hw3-*test*.pl0 hw3-*test*.out Makefile $(PROVIDEDFILES)
-	$(ZIP) $(TESTSZIPFILE) hw3-*test*.pl0 hw3-*test*.out Makefile $(PROVIDEDFILES)
+	chmod 444 $(TESTFILES) $(EXPECTEDOUTPUTS) Makefile $(PROVIDEDFILES)
+	$(ZIP) $(TESTSZIPFILE) $(TESTFILES) $(EXPECTEDOUTPUTS) Makefile $(PROVIDEDFILES)

@@ -8,17 +8,24 @@
 #include <limits.h>
 
 #include "lexer.h"
+#include "ast.h"
+#include "parser.h"
+#include "unparser.h"
 
 
-int main(void)
+int main(int argc, char *argv[])
 {
 	// open input file (lexer_open)/ initialize parser
+	parser_open(argv[1]);
 
 	// parse program, return ptr to AST (progAST)
+	AST *progAST = parseyParse();
 
 	// close input file (lexer_close)
+	parser_close();
 
 	// unparse program with arguments from stdout and progAST
+	unparseProgram(stdout, progAST);
 
 	// initialize symbol table
 
