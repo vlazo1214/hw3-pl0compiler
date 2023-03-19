@@ -1,5 +1,5 @@
 // By: Vincent Lazo, Christian Manuel
-// parse given file, checking for valid syntax against given grammar while building an AST
+// parse given file, checking for valid syntax against given grammar, returning an AST
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,7 +18,8 @@
 
 static token currToken;
 
-token_type can_begin_stmt[STMTBEGINTOKS] = {identsym, beginsym, ifsym, whilesym, readsym, writesym, skipsym};
+token_type can_begin_stmt[STMTBEGINTOKS] =
+{identsym, beginsym, ifsym, whilesym, readsym, writesym, skipsym};
 
 // go to next token
 void advance()
@@ -58,12 +59,12 @@ void parser_close()
 // <program> ::= <block> EOF
 AST *parseyParse()
 {
-	AST *block = parseBlock();
+	AST *progAST = parseBlock();
 	eat(eofsym);
 
 	// might be more stuff to do here
 
-	return block;
+	return progAST;
 }
 
 // parse const & var decls and stmt
@@ -106,15 +107,9 @@ AST *parseBlock()
 		}
 	}
 	// if both lists are empty (i.e. there are no const/ var decls) set file loc to stmt
-	else if (stmt != NULL)
-	{
-		floc = stmt->file_loc;
-	}
-	// (might be unnecessary) if theres no program
 	else
 	{
-		// might have to bail_with_error?
-		return NULL;
+		floc = stmt->file_loc;
 	}
 
 	return ast_program(floc.filename, floc.line, floc.column, const_defs, var_decls, stmt);
@@ -158,28 +153,32 @@ AST_list parseConstDecl()
 {
 	AST_list ret, last, new_const_def;
 
+	token const_sym = currToken, idTemp;
+
 	eat(constsym);
 
-	ret = parseConstDef();
+	ret = parseConstDef(const_sym);
 	last = ret;
 
 	while (currToken.typ == commasym)
 	{
 		eat(commasym);
 
-		// currToken is currently an ident, so append it to ret
-		new_const_def = parseConstDef();
-		add_AST_to_end(&ret, &last, new_const_def);
-	}
+		idTemp = currToken;
 
-	eat(semisym);
+		// currToken is currently an ident, so append it to ret
+		new_const_def = parseConstDef(idTemp);
+		add_AST_to_end(&ret, &last, new_const_def);
+		
+		eat(semisym);
+	}
 
 	return ret;
 }
 
 // parse a const definition
 // <const-def> ::= <ident> = <number>
-AST_list parseConstDef()
+AST_list parseConstDef(token idTemp)
 {
 	// remember ident token
 	token idToken = currToken;
@@ -195,7 +194,7 @@ AST_list parseConstDef()
 
 	eat(numbersym);
 
-	return ast_list_singleton(ast_const_def(idToken, idToken.text, numToken.value));
+	return ast_list_singleton(ast_const_def(idTemp, idToken.text, numToken.value));
 }
 
 // -----------------------------var decls-----------------------------
@@ -220,33 +219,36 @@ AST_list parseVarDecls()
 AST_list parseVarDecl()
 {
 	AST_list ret, last, new_var_decl;
+	token var_sym = currToken, idTemp;
 
 	eat(varsym);
 
-	ret = parseVarIdent();
+	ret = ast_list_singleton(parseVarIdent(var_sym));
 	last = ret;
 
 	while (currToken.typ == commasym)
 	{
 		eat(commasym);
 
-		new_var_decl = parseVarIdent();
+		idTemp = currToken;
+
+		new_var_decl = parseVarIdent(idTemp);
 		add_AST_to_end(&ret, &last, new_var_decl);
+		eat(semisym);
 	}
 
-	eat(semisym);
 
 	return ret;
 }
 
 // go to next ident
-AST_list parseVarIdent()
+AST_list parseVarIdent(token idTemp)
 {
 	token idToken = currToken;
 
 	eat(identsym);
 
-	return ast_list_singleton(ast_var_decl(idToken, idToken.text));
+	return ast_list_singleton(ast_var_decl(idTemp, idToken.text));
 }
 
 // -----------------------------stmts-----------------------------
@@ -256,10 +258,8 @@ AST_list parseVarIdent()
 AST *parseStmts()
 {
 	AST *ret = NULL;
-
-	// checks if there even are any stmts
-	if (is_stmt_beginning_token(currToken))
-		ret = parseStmt();
+		
+	ret = parseStmt();
 
 	return ret;
 }
