@@ -18,11 +18,10 @@
 
 static token currToken;
 
-static token_type can_begin_stmt[STMTBEGINTOKS] = 
-{identsym, beginsym, ifsym, whilesym, readsym, writesym, skipsym};
+token_type can_begin_stmt[STMTBEGINTOKS] = {identsym, beginsym, ifsym, whilesym, readsym, writesym, skipsym};
 
 // go to next token
-static void advance()
+void advance()
 {
 	if (!lexer_done())
 		currToken = lexer_next();
@@ -327,36 +326,76 @@ AST* parseAssignStmt()
 }
 
 // <expr> ::= <term> {<add-sub-term>}
-AST* parseExpr()
+// <add-sub-term> ::= <add-sub> <term>
+// <add-sub> ::= <plus> | <minus>
+AST_list parseExpr()
 {
-	// AST *e1 = NULL, *e2 = NULL;
-	
-	AST *ret = parseTerm();
+	AST_list ret = parseTerm();
+	AST_list last = ret;
+	AST_list term;
+	token plus_or_minus;
+	bin_arith_op op;
+
+	while (is_a_sign(currToken.typ))
+	{
+		// keep parsing terms and append to ret
+		if (currToken.typ == plussym)
+		{
+			plus_or_minus = currToken;
+			op = addop;
+			eat(plussym);
+		}
+		else
+		{
+			plus_or_minus = currToken;
+			op = subop;
+			eat(minussym);
+		}
+
+		term = parseTerm();
+
+		add_AST_to_end(&ret, &last, ast_list_singleton(
+			ast_op_expr(plus_or_minus, op, term)));
+	}
 
 	return ret;
 }
 
 // <term> ::= <factor> {<mult-div-factor>}
+// <factor> ::= <ident> | <sign> <number> | (<expr>)
+// <mult-div-factor> ::= <mult-div> <factor>
+// <mult-div> ::= <mult> | <div>
 AST_list parseTerm()
 {
 	AST_list ret = parseFactor();
-	token remember;
-	bin_arith_op mult_or_div;
+	AST_list last = ret;
+
+	AST *e1 = ast_list_first(ret), *e2 = NULL;
+
+	token mult_or_div;
+	bin_arith_op op;
 
 	while (currToken.typ == multsym || currToken.typ == divsym)
 	{
 		if (currToken.typ == multsym)
 		{
-			remember = currToken;
+			mult_or_div = currToken;
+			op = multop;
 			eat(multsym);
 		}
 		else if (currToken.typ == divsym)
 		{
-			remember = currToken;
+			mult_or_div = currToken;
+			op = divop;
 			eat(divsym);
 		}
 
+		e2 = ast_op_expr(mult_or_div, op, ast_list_first(parseFactor()));
 
+		add_AST_to_end(&ret, &last, ast_list_singleton(
+			ast_bin_expr(mult_or_div, e1, op, e2)));
+
+		e1 = last;
 	}
 
 	return ret;
@@ -364,22 +403,21 @@ AST_list parseTerm()
 
 // <factor> ::= <ident> | <sign> <number> | (<expr>)
 // <sign> ::= <plus> | <minus> | <empty>
-AST *parseFactor()
+AST_list parseFactor()
 {
-	AST *ret = NULL;
+	AST_list ret = NULL;
 
-	// put hard returns for no real reason, can get rid of
 	if (currToken.typ == identsym)
 	{
-		ret = parseIdent();
+		ret = ast_list_singleton(parseIdent());
 	}
 	else if (is_a_sign(currToken.typ))
 	{
-		ret = parseSign();
+		ret = ast_list_singleton(parseSign());
 	}
 	else if (currToken.typ == numbersym)
 	{
-		ret = parseNumber();
+		ret = ast_list_singleton(parseNumber());
 	}
 	else
 	{
@@ -405,43 +443,43 @@ bool is_a_sign(token_type tt)
 AST *parseSign()
 {
 	AST *ret = NULL;
-	token remember;
-	bin_arith_op plus_or_minus;
+	token plus_or_minus;
+	bin_arith_op op;
 
 	if (currToken.typ == plussym)
 	{
-		remember = currToken;
-		plus_or_minus = addop;
+		plus_or_minus = currToken;
+		op = addop;
 		eat(plussym);
 	}
 	else
 	{
-		remember = currToken;
-		plus_or_minus = subop;
+		plus_or_minus = currToken;
+		op = subop;
 		eat(minussym);
 	}
 
-	ret = ast_op_expr(remember, plus_or_minus, parseNumber());
+	ret = ast_op_expr(plus_or_minus, op, parseNumber());
 
 	return ret;
 }
 
-AST_list parseIdent()
+AST *parseIdent()
 {
 	token idToken = currToken;
 
 	eat(identsym);
 
-	return ast_list_singleton(ast_ident(idToken, idToken.text));
+	return ast_ident(idToken, idToken.text);
 }
 
-AST_list parseNumber()
+AST *parseNumber()
 {
 	token numToken = currToken;
 
 	eat(numbersym);
 
-	return ast_list_singleton(ast_number(numToken, numToken.value));
+	return ast_number(numToken, numToken.value);
 }
 
 AST* parseBinExpr()

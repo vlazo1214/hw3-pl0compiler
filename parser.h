@@ -5,6 +5,8 @@
 #include "ast.h"
 #include "token.h"
 
+void advance();
+
 void eat();
 
 // call lexer open
@@ -38,13 +40,15 @@ bool is_stmt_beginning_token(token t);
 
 AST* parseAssignStmt();
 
+AST_list parseExpr();
+
 AST *parseTerm();
 
 AST *parseFactor();
 
 bool is_a_sign(token_type tt);
 
-AST *parseSign()
+AST *parseSign();
 
 AST *parseIdent();
 
@@ -71,8 +75,6 @@ AST* parseOddCond();
 AST* parseBinRelCond();
 
 AST* parseRelOp();
-
-AST* parseExpr();
 
 AST* parseBinExpr();
 
