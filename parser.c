@@ -453,7 +453,7 @@ AST_list parseFactor()
 	{
 		if (DEBUG)
 			printf("in else check\n");
-		ret = parseTerm();
+		ret = parseExpr();
 	}
 
 	return ret;
