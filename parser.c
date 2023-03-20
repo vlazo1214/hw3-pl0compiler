@@ -430,7 +430,7 @@ AST_list parseTerm()
 AST_list parseFactor()
 {
 	AST_list ret = NULL;
-	token numToken;
+	// token numToken;
 
 	if (DEBUG)
 		printf("currToken type is %d\n", currToken.typ);
@@ -444,8 +444,8 @@ AST_list parseFactor()
 	}
 	else if (currToken.typ == numbersym)
 	{
-		numToken = currToken;
-		eat(numbersym);
+		// numToken = currToken;
+		// eat(numbersym);
 		// parseTerm();
 		ret = ast_list_singleton(parseNumber());
 	}
