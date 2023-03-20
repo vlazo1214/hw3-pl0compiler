@@ -1,1 +1,1 @@
-hw3-parseerrtest3.pl0: line 2, column 6: syntax error, Expecting one of: identsym, beginsym, ifsym, whilesym, readsym, writesym or skipsym, but saw a semisym token (";")
+hw3-parseerrtest3.pl0: line 6, column 12: syntax error, expecting a rparensym token, but saw a leqsym token ("<=")

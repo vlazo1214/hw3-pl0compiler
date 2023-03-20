@@ -1,1 +1,7 @@
-hw3-asttest2.pl0: line 2, column 6: syntax error, Expecting one of: identsym, beginsym, ifsym, whilesym, readsym, writesym or skipsym, but saw a semisym token (";")
+var x;
+var y;
+begin
+  x := 3;
+  y := x
+end
+.

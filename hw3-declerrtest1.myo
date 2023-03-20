@@ -1,1 +1,5 @@
-hw3-declerrtest1.pl0: line 2, column 9: syntax error, expecting a semisym token, but saw a commasym token (",")
+var x;
+var y;
+var x;
+x := 7
+.

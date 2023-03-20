@@ -1,1 +1,28 @@
-hw3-asttest4.pl0: line 4, column 9: syntax error, expecting a semisym token, but saw a commasym token (",")
+const pi = 31;
+const e = 3;
+var x;
+var y;
+var z;
+begin
+  x := 3;
+  if x > 0
+  then
+    x := y
+  else
+    begin
+      x := 1;
+      y := z
+    end;
+  while x <= 10
+  do
+    x := x;
+  write x;
+  read y;
+  write y;
+  if odd y
+  then
+    skip
+  else
+    y := y
+end
+.

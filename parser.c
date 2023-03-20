@@ -16,6 +16,8 @@
 
 #define STMTBEGINTOKS 7
 
+#define DEBUG 0
+
 static token currToken;
 
 token_type can_begin_stmt[STMTBEGINTOKS] =
@@ -207,10 +209,18 @@ AST_list parseConstDef(token idTemp)
 AST_list parseVarDecls()
 {
 	AST_list ret = ast_list_empty_list();
+	AST_list last = ret;
+	token var_sym = currToken;
+	// printf("in parseVarDecls()\n");
+	// if (currToken.typ == varsym)
 
 	// checks if there even exists any var decls
-	if (currToken.typ == varsym)
-		ret = parseVarDecl();
+	while (currToken.typ == varsym)
+	{
+		eat(varsym);
+		add_AST_to_end(&ret, &last, ast_list_singleton(parseVarDecl(var_sym)));
+		eat(semisym);
+	}
 
 	return ret;
 }
@@ -219,12 +229,10 @@ AST_list parseVarDecls()
 // <idents> ::= <ident> {<comma-ident>}
 // 							  ^
 // 						, <ident>
-AST_list parseVarDecl()
+AST_list parseVarDecl(token var_sym)
 {
 	AST_list ret, last, new_var_decl;
-	token var_sym = currToken, idTemp;
-
-	eat(varsym);
+	token idTemp;
 
 	ret = ast_list_singleton(parseVarIdent(var_sym));
 	last = ret;
@@ -237,7 +245,6 @@ AST_list parseVarDecl()
 
 		new_var_decl = parseVarIdent(idTemp);
 		add_AST_to_end(&ret, &last, new_var_decl);
-		eat(semisym);
 	}
 
 
@@ -324,7 +331,7 @@ AST* parseStmt()
 // -----------------------------assign stmt-----------------------------
 
 
-// <ident> := <expr>
+// i<dent> := <expr>
 AST* parseAssignStmt()
 {
 	token idToken = currToken;
@@ -342,6 +349,9 @@ AST* parseAssignStmt()
 // <add-sub> ::= <plus> | <minus>
 AST_list parseExpr()
 {
+	if (DEBUG)
+		printf("in expr\n");
+
 	AST_list ret = parseTerm();
 	AST_list last = ret;
 	AST *e1 = ast_list_singleton(ret), *e2 = NULL;
@@ -379,6 +389,8 @@ AST_list parseExpr()
 // <mult-div> ::= <mult> | <div>
 AST_list parseTerm()
 {
+	if (DEBUG)
+		printf("in term\n");
 	AST_list ret = parseFactor();
 	AST_list last = ret;
 
@@ -418,7 +430,10 @@ AST_list parseTerm()
 AST_list parseFactor()
 {
 	AST_list ret = NULL;
+	token numToken;
 
+	if (DEBUG)
+		printf("currToken type is %d\n", currToken.typ);
 	if (currToken.typ == identsym)
 	{
 		ret = ast_list_singleton(parseIdent());
@@ -429,13 +444,16 @@ AST_list parseFactor()
 	}
 	else if (currToken.typ == numbersym)
 	{
+		numToken = currToken;
+		eat(numbersym);
+		// parseTerm();
 		ret = ast_list_singleton(parseNumber());
 	}
 	else
 	{
-		eat(lparensym);
-		ret = parseExpr();
-		eat(rparensym);
+		if (DEBUG)
+			printf("in else check\n");
+		ret = parseTerm();
 	}
 
 	return ret;
@@ -549,21 +567,34 @@ AST_list parseStmtList()
 // <if-stmt> ::= if <condition> then <stmt> else <stmt>
 AST* parseIfStmt()
 {
+	if (DEBUG)
+		printf("made it to if\n");
 	AST *cond_stmt, *then_stmt, *else_stmt;
 	token if_sym = currToken;
 
 	eat(ifsym);
+	if (DEBUG)
+		printf("gonna parse cond\n\n");
 
 	cond_stmt = parseCondition();
+
 
 	eat(thensym);
 
 	then_stmt = parseStmt();
 
+	if (DEBUG)
+		printf("parsed then\n");
+
 	eat(elsesym);
 
 	else_stmt = parseStmt();
 
+	if (DEBUG)
+	{
+		printf("currToken type is %d\n", currToken.typ);
+		printf("made it out if\n");
+	}
 	return ast_if_stmt(if_sym, cond_stmt, then_stmt, else_stmt);
 }
 
@@ -575,13 +606,18 @@ AST* parseCondition()
 	token temp;
 	rel_op op;
 
+	if (DEBUG)
+		printf("in cond\n");
+
 	if (currToken.typ == oddsym)
 	{
+		if (DEBUG)
+			printf("in odd check\n");
 		temp = currToken;
 
-		ret = ast_odd_cond(temp, parseExpr());
-
 		eat(oddsym);
+
+		ret = ast_odd_cond(temp, parseExpr());
 	}
 	else
 	{

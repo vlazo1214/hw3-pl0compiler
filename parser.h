@@ -24,13 +24,13 @@ AST_list parseConstDecls();
 
 AST_list parseConstDecl();
 
-AST_list parseConstDef();
+AST_list parseConstDef(token idTemp);
 
 AST_list parseVarDecls();
 
-AST_list parseVarDecl();
+AST_list parseVarDecl(token var_sym);
 
-AST_list parseVarIdent();
+AST_list parseVarIdent(token idTemp);
 
 AST *parseStmts();
 

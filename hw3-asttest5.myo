@@ -1,1 +1,13 @@
-hw3-asttest5.pl0: line 2, column 6: syntax error, Expecting one of: identsym, beginsym, ifsym, whilesym, readsym, writesym or skipsym, but saw a semisym token (";")
+var x;
+begin
+  x := 2;
+  if x <= 1
+  then
+    write x
+  else
+    skip;
+  while x <= 10
+  do
+    x := x
+end
+.

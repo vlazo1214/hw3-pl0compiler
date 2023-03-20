@@ -1,1 +1,5 @@
-hw3-asttest7.pl0: line 1, column 16: syntax error, expecting a semisym token, but saw a commasym token (",")
+var x;
+var aLongOne;
+var ALongerOne;
+x := aLongOne
+.
