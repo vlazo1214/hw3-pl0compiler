@@ -46,6 +46,8 @@ AST *parseTerm();
 
 AST *parseFactor();
 
+AST *parseMultDiv();
+
 bool is_a_sign(token_type tt);
 
 AST *parseSign();

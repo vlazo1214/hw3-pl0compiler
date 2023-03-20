@@ -354,7 +354,8 @@ AST_list parseExpr()
 
 	AST_list ret = parseTerm();
 	AST_list last = ret;
-	AST *e1 = ast_list_singleton(ret), *e2 = NULL;
+	AST_list temp = NULL;
+	AST *e1 = ast_list_first(ret), *e2 = NULL;
 	token plus_or_minus;
 	bin_arith_op op;
 
@@ -374,7 +375,7 @@ AST_list parseExpr()
 			eat(minussym);
 		}
 
-		e2 = ast_op_expr(plus_or_minus, op, ast_list_first(parseTerm()));
+		e2 = ast_list_first(parseTerm());
 
 		add_AST_to_end(&ret, &last, ast_list_singleton(
 			ast_bin_expr(plus_or_minus, e1, op, e2)));
@@ -442,21 +443,57 @@ AST_list parseFactor()
 	{
 		ret = ast_list_singleton(parseSign());
 	}
-	else if (currToken.typ == numbersym)
-	{
-		// numToken = currToken;
-		// eat(numbersym);
-		// parseTerm();
-		ret = ast_list_singleton(parseNumber());
-	}
 	else
 	{
-		if (DEBUG)
-			printf("in else check\n");
-		ret = parseExpr();
+		ret = ast_list_singleton(parseMultDiv());
 	}
 
 	return ret;
+}
+
+AST *parseMultDiv()
+{
+	// here, if <sign> is empty, that introdues the possibility of
+	// the next next token is a mult or div.
+	// if the next next token is NOT a mult or div, just return the
+	// parsed number;
+	// if it IS a mult or div, return the bin_op_expr with the remembered token numToken, 
+	// e1 as the first factor, op as the mult or div, then op_expr using the remembered 
+	// token, mult_or_div, the bin_arith_op op, and the next number
+	AST *e1 = NULL;
+	AST *e2 = NULL;
+
+	token mult_or_div;
+	bin_arith_op op;
+
+	token numToken = currToken;
+
+	eat(numbersym);
+
+	e1 = ast_number(numToken, numToken.value);
+
+	if (currToken.typ == multsym)
+	{
+		mult_or_div = currToken;
+		op = multop;
+		eat(multsym);
+
+		e2 = parseNumber();
+		
+		return ast_bin_expr(numToken, e1, op, e2);
+	}
+	else if (currToken.typ == divsym)
+	{
+		mult_or_div = currToken;
+		op = divop;
+		eat(divsym);
+
+		e2 = parseNumber();
+		
+		return ast_bin_expr(numToken, e1, op, e2);
+	}
+
+	return e1;
 }
 
 // is current token a plus or minus?
