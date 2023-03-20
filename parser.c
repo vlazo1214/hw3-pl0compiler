@@ -56,7 +56,7 @@ void parser_close()
 }
 
 // parse program to return AST
-// <program> ::= <block> EOF
+// <program> ::= <block> .
 AST *parseyParse()
 {
 	AST *progAST = parseBlock();
