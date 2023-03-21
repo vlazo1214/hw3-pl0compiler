@@ -354,12 +354,12 @@ AST_list parseExpr()
 
 	AST_list ret = parseTerm();
 	AST_list last = ret;
-	AST_list temp = NULL;
+	// AST_list temp = NULL;
 	AST *e1 = ast_list_first(ret), *e2 = NULL;
 	token plus_or_minus;
 	bin_arith_op op;
 
-	while (is_a_sign(currToken.typ))
+	while (currToken.typ == plussym || currToken.typ == minussym)
 	{
 		// keep parsing terms and append to ret
 		if (currToken.typ == plussym)
@@ -463,7 +463,7 @@ AST *parseMultDiv()
 	AST *e1 = NULL;
 	AST *e2 = NULL;
 
-	token mult_or_div;
+	// token mult_or_div;
 	bin_arith_op op;
 
 	token numToken = currToken;
@@ -474,7 +474,7 @@ AST *parseMultDiv()
 
 	if (currToken.typ == multsym)
 	{
-		mult_or_div = currToken;
+		// mult_or_div = currToken;
 		op = multop;
 		eat(multsym);
 
@@ -484,7 +484,7 @@ AST *parseMultDiv()
 	}
 	else if (currToken.typ == divsym)
 	{
-		mult_or_div = currToken;
+		// mult_or_div = currToken;
 		op = divop;
 		eat(divsym);
 
@@ -526,7 +526,7 @@ AST *parseSign()
 		eat(minussym);
 	}
 
-	ret = ast_op_expr(plus_or_minus, op, parseNumber());
+	ret = ast_op_expr(plus_or_minus, op, ast_list_first(parseTerm()));
 
 	return ret;
 }

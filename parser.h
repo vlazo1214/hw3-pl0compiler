@@ -7,7 +7,7 @@
 
 void advance();
 
-void eat();
+void eat(token_type tt);
 
 // call lexer open
 void parser_open(const char *filename);
