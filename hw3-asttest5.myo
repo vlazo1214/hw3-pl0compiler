@@ -1,1 +1,13 @@
-hw3-asttest5.pl0: line 4, column 10: syntax error, expecting a endsym token, but saw a numbersym token ("1")
+var x;
+begin
+  x := (2 - 1);
+  if x <= 1
+  then
+    write x
+  else
+    skip;
+  while x <= 10
+  do
+    x := (x + 1)
+end
+.

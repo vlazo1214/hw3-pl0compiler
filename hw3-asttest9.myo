@@ -1,1 +1,8 @@
-hw3-asttest9.pl0: line 6, column 12: syntax error, expecting a endsym token, but saw a identsym token ("x")
+var x;
+var y;
+var z;
+var varname;
+var varname2;
+begin
+  x := 10;
+  y := ((5 - x) - Unexpected type_tag 0 in unparseExpr

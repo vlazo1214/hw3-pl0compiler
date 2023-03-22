@@ -361,6 +361,7 @@ AST *parseExpr()
 		exp = ast_bin_expr(fst, exp, rltrm->data.op_expr.arith_op, rltrm->data.op_expr.exp);
     }
 
+	
     return exp;
 }
 
@@ -394,12 +395,14 @@ AST *parseMultDivFactor()
 		case multsym:
 			eat(multsym);
 			exp = parseFactor();
-			return ast_op_expr(opt, multop, exp);
+			exp = ast_op_expr(opt, multop, exp);
+			return exp;
 			break;
 		case divsym:
 			eat(divsym);
 			e = parseFactor();
-			return ast_op_expr(opt, divop, e);
+			e = ast_op_expr(opt, divop, e);
+			return e;
 			break;
 		default:;
 			token_type expected[2] = {multsym, divsym};
@@ -418,14 +421,16 @@ AST *parseAddSubTerm()
     switch (currToken.typ)
 	{
 		case plussym:
-			// eat(plussym);
+			eat(plussym);
 			exp = parseTerm();
-			return ast_op_expr(fst, addop, exp);
+			exp = ast_op_expr(fst, addop, exp);
+			return exp;
 			break;
 		case minussym:
-			// eat(minussym);
+			eat(minussym);
 			e = parseTerm();
-			return ast_op_expr(fst, subop, e);
+			e = ast_op_expr(fst, subop, e);
+			return e;
 			break;
 		default:;
 			token_type expected[2] = {plussym, minussym};
@@ -515,34 +520,6 @@ bool is_a_sign(token_type tt)
 	else
 		return false;
 }
-
-// <sign> ::= <plus> | <minus> | <empty>
-// also account for <number> that follows
-// AST *parseSign()
-// {
-	// AST *ret = NULL;
-	// token plus_or_minus;
-	// bin_arith_op op;
-
-	// if (currToken.typ == plussym)
-	// {
-	// 	plus_or_minus = currToken;
-	// 	// tempToken = currToken;
-	// 	op = addop;
-	// 	eat(plussym);
-	// }
-	// else
-	// {
-	// 	plus_or_minus = currToken;
-	// 	// tempToken = currToken;
-	// 	op = subop;
-	// 	eat(minussym);
-	// }
-
-// 	ret = ast_op_expr(plus_or_minus, op, ast_list_first(parseTerm()));
-
-// 	return ret;
-// }
 
 AST *parseIdentExpr()
 {

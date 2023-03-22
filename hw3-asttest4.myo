@@ -4,4 +4,25 @@ var x;
 var y;
 var z;
 begin
-  x := ((3 * 4) - Unexpected type_tag 0 in unparseExpr
+  x := ((3 * 4) - (2 / 5));
+  if x > 0
+  then
+    x := (y + 1)
+  else
+    begin
+      x := 1;
+      y := z
+    end;
+  while x <= 10
+  do
+    x := (x + 1);
+  write x;
+  read y;
+  write (y + 2);
+  if odd y
+  then
+    skip
+  else
+    y := ((y / 2) + 3)
+end
+.

@@ -10,7 +10,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/compiler",
-            "args": ["hw3-asttest4.pl0"],
+            "args": ["hw3-asttest6.pl0"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
