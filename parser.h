@@ -46,15 +46,19 @@ AST *parseTerm();
 
 AST *parseFactor();
 
-AST *parseMultDiv();
+AST *parseMultDivFactor();
 
 bool is_a_sign(token_type tt);
 
-AST *parseSign();
+AST *parseAddSubTerm();
 
-AST *parseIdent();
+AST *parseOpExpr(token remember);
+
+AST *parseIdentExpr();
 
 AST* parseNumber();
+
+AST *parseParenExpr();
 
 AST* parseBeginStmt();
 
