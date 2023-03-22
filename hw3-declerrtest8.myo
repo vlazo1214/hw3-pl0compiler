@@ -1,11 +1,1 @@
-const y = 122;
-const z = 123;
-var a;
-var b;
-var c;
-begin
-  a := 3;
-  y := z;
-  write x
-end
-.
+hw3-declerrtest8.pl0: line 6, column 16: syntax error, expecting a endsym token, but saw a identsym token ("b")

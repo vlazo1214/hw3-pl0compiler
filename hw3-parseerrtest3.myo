@@ -1,1 +1,1 @@
-Segmentation fault
+hw3-parseerrtest3.pl0: line 4, column 11: syntax error, expecting a endsym token, but saw a numbersym token ("02")
