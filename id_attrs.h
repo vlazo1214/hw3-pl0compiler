@@ -25,4 +25,8 @@ extern id_attrs *create_id_attrs(file_location floc, id_kind k,
 // Return a lowercase version of the kind's name as a string
 // (i.e. if k == variable, return "variable", else return "constant")
 extern const char *kind2str(id_kind k);
+
+//ADDING THIS CUZ IDK HOW ELSE TO RETURN A VARIABLE OF TYPE <KIND> 
+//extern id_kind *str2kind(char * str);
+
 #endif

@@ -11,3 +11,4 @@ begin
     x := x
 end
 .
+Unexpected type_tag (11) in scope_check_expr (for line 5, column 6)!

@@ -26,3 +26,4 @@ begin
     y := y
 end
 .
+Unexpected type_tag (11) in scope_check_expr (for line 7, column 6)!

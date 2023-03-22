@@ -5,6 +5,8 @@
 #include "utilities.h"
 #include "id_attrs.h"
 
+#include <stdio.h>
+
 // Return a freshly allocated id_attrs struct
 // with its field tok set to t, kind set to k, 
 // and its offset to ofst.
@@ -30,3 +32,7 @@ const char *kind2str(id_kind k)
     static const char *kind_names[2] = {"constant", "variable"};
     return kind_names[k];
 }
+
+//ADDING THIS CUZ IDK HOW ELSE TO RETURN A VARIABLE OF TYPE <KIND> 
+//extern id_kind *str2kind(char * str);
+

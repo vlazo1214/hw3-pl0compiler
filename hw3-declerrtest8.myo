@@ -9,3 +9,4 @@ begin
   write x
 end
 .
+hw3-declerrtest8.pl0: line 6, column 5: identifer "y" is not declared!

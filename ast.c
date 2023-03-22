@@ -48,13 +48,12 @@ AST *ast_const_def(token t, const char *ident, short int num)
     return ret;
 }
 
-// Return a (pointer to a) fresh AST for a var declaration
-// with name ident.
+// Return a (pointer to a) fresh AST for a var declaration with name ident.
 AST *ast_var_decl(token t, const char *ident)
 {
     AST *ret = ast_allocate(t.filename, t.line, t.column);
     ret->type_tag = var_decl_ast;
-    ret->data.var_decl.name = ident;
+    ret->data.var_decl.name = ident; // I FOUND THIS FOR SCOPE CHECK D, NEED TO FIND KIND K OR ATTRS
     return ret;
 }
 

@@ -34,3 +34,4 @@ begin
   end
 end
 .
+Unexpected type_tag (11) in scope_check_expr (for line 12, column 16)!
