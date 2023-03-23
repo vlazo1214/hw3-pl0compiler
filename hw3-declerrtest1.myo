@@ -3,7 +3,4 @@ var y;
 var x;
 x := 7
 .
-<<<<<<< Updated upstream
-=======
 hw3-declerrtest1.pl0: line 2, column 11: variable "x" is already declared as a variable
->>>>>>> Stashed changes

@@ -11,6 +11,8 @@
 #include "ast.h"
 #include "parser.h"
 #include "unparser.h"
+#include "scope_check.h"
+#include "scope_symtab.h"
 
 
 int main(int argc, char *argv[])
@@ -28,8 +30,10 @@ int main(int argc, char *argv[])
 	unparseProgram(stdout, progAST);
 
 	// initialize symbol table
+	scope_initialize();
 
 	// using progAST, build symbol table and check for dupe decls/ undecl'd idents
+	scope_check_program(progAST);
 
 	return EXIT_SUCCESS;
 }
