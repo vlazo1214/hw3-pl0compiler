@@ -22,9 +22,9 @@ AST *parseBlock();
 
 AST_list parseConstDecls();
 
-AST_list parseConstDecl();
+AST_list parseConstDecl(token const_sym);
 
-AST_list parseConstDef(token idTemp);
+AST_list parseConstIdent(token idTemp);
 
 AST_list parseVarDecls();
 

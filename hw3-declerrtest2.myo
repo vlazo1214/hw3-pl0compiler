@@ -1,1 +1,9 @@
-hw3-declerrtest2.pl0: line 2, column 23: syntax error, expecting a semisym token, but saw a commasym token (",")
+const nl = 10;
+const x = 120;
+const y = 121;
+const x = 170;
+begin
+  write y;
+  write nl
+end
+.
