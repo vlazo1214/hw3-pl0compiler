@@ -12,3 +12,4 @@ begin
     f := y
 end
 .
+hw3-declerrtest5.pl0: line 5, column 8: identifer "d" is not declared!

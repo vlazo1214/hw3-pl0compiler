@@ -28,7 +28,7 @@ AST_list parseConstIdent(token idTemp);
 
 AST_list parseVarDecls();
 
-AST_list parseVarDecl(token var_sym);
+AST_list parseVarDecl();
 
 AST_list parseVarIdent(token idTemp);
 

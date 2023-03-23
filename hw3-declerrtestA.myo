@@ -30,3 +30,4 @@ do
       e := f
   end
 .
+hw3-declerrtestA.pl0: line 15, column 22: identifer "e" is not declared!

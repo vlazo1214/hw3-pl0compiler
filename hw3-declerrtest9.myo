@@ -18,3 +18,4 @@ do
       e := f
   end
 .
+hw3-declerrtest9.pl0: line 11, column 24: identifer "e" is not declared!

@@ -7,3 +7,4 @@ begin
   write nl
 end
 .
+hw3-declerrtest2.pl0: line 3, column 25: constant "x" is already declared as a constant

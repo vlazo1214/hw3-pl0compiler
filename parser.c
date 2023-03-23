@@ -207,7 +207,7 @@ AST_list parseVarDecls()
 {
 	AST_list ret = ast_list_empty_list();
 	AST_list last = ret;
-	token var_sym = currToken;
+	//token var_sym = currToken;
 	// printf("in parseVarDecls()\n");
 	// if (currToken.typ == varsym)
 
@@ -215,7 +215,7 @@ AST_list parseVarDecls()
 	while (currToken.typ == varsym)
 	{
 		eat(varsym);
-		add_AST_to_end(&ret, &last, ast_list_singleton(parseVarDecl(var_sym)));
+		add_AST_to_end(&ret, &last, ast_list_singleton(parseVarDecl()));
 		eat(semisym);
 	}
 
@@ -226,12 +226,12 @@ AST_list parseVarDecls()
 // <idents> ::= <ident> {<comma-ident>}
 // 							  ^
 // 						, <ident>
-AST_list parseVarDecl(token var_sym)
+AST_list parseVarDecl()
 {
 	AST_list ret, last, new_var_decl;
-	token idTemp;
+	token idTemp = currToken;
 
-	ret = ast_list_singleton(parseVarIdent(var_sym));
+	ret = ast_list_singleton(parseVarIdent(idTemp));
 	last = ret;
 
 	while (currToken.typ == commasym)
@@ -243,7 +243,6 @@ AST_list parseVarDecl(token var_sym)
 		new_var_decl = parseVarIdent(idTemp);
 		add_AST_to_end(&ret, &last, new_var_decl);
 	}
-
 
 	return ret;
 }

@@ -34,3 +34,4 @@ begin
   end
 end
 .
+hw3-declerrtest6.pl0: line 20, column 37: identifer "w" is not declared!

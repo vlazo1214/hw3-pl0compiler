@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
 	// open input file (lexer_open)/ initialize parser
 	parser_open(argv[1]);
 
-	// parse program, return ptr to AST (progAST)
+	// parse program, return ptr to AST (progAST) 
 	AST *progAST = parseyParse();
 
 	// close input file (lexer_close)
