@@ -1,1 +1,4 @@
-hw3-declerrtest3.pl0: line 2, column 14: syntax error, Expecting one of: identsym, beginsym, ifsym, whilesym, readsym, writesym or skipsym, but saw a semisym token (";")
+const x = 121;
+var x;
+skip
+.

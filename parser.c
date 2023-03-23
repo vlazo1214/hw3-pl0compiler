@@ -142,29 +142,31 @@ static void add_AST_to_end(AST_list *head, AST_list *tail, AST_list newTail)
 AST_list parseConstDecls()
 {
 	AST_list ret = ast_list_empty_list();
+	AST_list last = ret;
+	token const_sym = currToken;
 
-	// checks if there even exists any const defs
-	if (currToken.typ == constsym)
-		ret = parseConstDecl();
+	// checks if there even exists any const decls
+	while (currToken.typ == constsym)
+	{
+		eat(constsym);
+		add_AST_to_end(&ret, &last, ast_list_singleton(parseConstDecl(const_sym)));
+		eat(semisym);
+	}
 
 	return ret;
 }
 
-// <const-decl> ::= const <const-def> {<comma-const-def>} ;
-// 							   ^			^
-// 					<ident> = <number>	  , <ident> = <number>
-AST_list parseConstDecl()
+// <const-decl> ::= const <ident> = <number>;
+// <idents> ::= <ident> {<comma-ident>}
+// 							  ^
+// 						, <ident>
+AST_list parseConstDecl(token const_sym)
 {
-	AST_list ret, last, new_const_def;
+	AST_list ret, last, new_const_decl;
+	token idTemp;
 
-	token const_sym = currToken, idTemp;
-
-	eat(constsym);
-
-	ret = parseConstDef(const_sym);
+	ret = ast_list_singleton(parseConstIdent(const_sym));
 	last = ret;
-
-	// might need to eat semisym?
 
 	while (currToken.typ == commasym)
 	{
@@ -172,28 +174,22 @@ AST_list parseConstDecl()
 
 		idTemp = currToken;
 
-		// currToken is currently an ident, so append it to ret
-		new_const_def = parseConstDef(idTemp);
-		add_AST_to_end(&ret, &last, new_const_def);
-		
-		eat(semisym);
+		new_const_decl = parseConstIdent(idTemp);
+		add_AST_to_end(&ret, &last, new_const_decl);
 	}
+
 
 	return ret;
 }
 
-// parse a const definition
-// <const-def> ::= <ident> = <number>
-AST_list parseConstDef(token idTemp)
+// go to next ident
+AST_list parseConstIdent(token idTemp)
 {
-	// remember ident token
 	token idToken = currToken;
 	token numToken;
-	
-	// move on to =
+
 	eat(identsym);
 
-	// move on to number
 	eat(eqsym);
 
 	numToken = currToken;
@@ -478,14 +474,14 @@ AST *parseOpExpr(token remember)
 	switch (remember.typ)
 	{
 		case plussym:
-			eat(plussym);
-			num = parseTerm();
-			return ast_op_expr(remember, addop, num);
+			// eat(plussym);
+			num = parseNumber();
+			return num;
 			break;
 		case minussym:
-			eat(minussym);
-			num = parseTerm();
-			return ast_op_expr(remember, subop, num);
+			// eat(minussym);
+			num = parseNumber();
+			return num;
 			break;
 		default:;
 			token_type expected[2] = {plussym, minussym};
@@ -534,16 +530,21 @@ AST *parseIdentExpr()
 AST *parseNumber()
 {
 	token remember = currToken;
+	token value;
 
 	switch (currToken.typ)
 	{
 		// get rid of eat for plus/minus
 		case plussym:
 			eat(plussym);
-			return ast_number(remember, remember.value);
+			value = currToken;
+			eat(numbersym);
+			return ast_number(remember, value.value);
 		case minussym:	
 			eat(minussym);
-			return ast_number(remember, remember.value * -1);
+			value = currToken;
+			eat(numbersym);
+			return ast_number(remember, value.value * -1);
 		case numbersym:
 			eat(numbersym);
 			return ast_number(remember, remember.value);

@@ -1,1 +1,20 @@
-hw3-declerrtest9.pl0: line 3, column 1: syntax error, Expecting one of: identsym, beginsym, ifsym, whilesym, readsym, writesym or skipsym, but saw a constsym token ("const")
+const w = 99;
+const x = 100;
+const y = 122;
+const z = 123;
+var a;
+var b;
+var c;
+var d;
+while a < w
+do
+  begin
+    c := ((y / z) * x);
+    d := w;
+    if odd ((c - (d * e)) - b)
+    then
+      e := 3
+    else
+      e := f
+  end
+.

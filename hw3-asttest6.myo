@@ -1,1 +1,35 @@
-hw3-asttest6.pl0: line 3, column 1: syntax error, Expecting one of: identsym, beginsym, ifsym, whilesym, readsym, writesym or skipsym, but saw a constsym token ("const")
+const a = 1;
+const b = 3;
+const c = 4;
+const d = 6;
+var aVar;
+var anotherVar;
+var x;
+begin
+  aVar := -1;
+  anotherVar := (((aVar - 2) - (3 / 1)) - (6 * aVar));
+  if anotherVar >= aVar
+  then
+    begin
+      write 32;
+      write 10;
+      anotherVar := ((anotherVar / 12) + 2);
+      while (anotherVar * 2) < 3
+      do
+        skip;
+      anotherVar := 0
+    end
+  else
+    begin
+      if 3 < 2
+      then
+        if 7 > 5
+        then
+          x := 3
+        else
+          skip
+      else
+        x := ((2 * 3) - (5 / 4))
+    end
+end
+.

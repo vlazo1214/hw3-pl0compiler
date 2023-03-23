@@ -1,1 +1,8 @@
-hw3-declerrtest4.pl0: line 2, column 23: syntax error, expecting a semisym token, but saw a commasym token (",")
+const x = 121;
+const y = 122;
+const z = 123;
+var a;
+var y;
+var c;
+skip
+.
